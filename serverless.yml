@@ -1,0 +1,100 @@
+service: golang-coach
+
+package:
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
+
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, self:provider.stage}
+
+  debug: ${env:DEBUG, "1"}
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: dev
+  region: ap-south-1
+  tracing: true
+  profile: golang-coach
+  memorySize: 1024 # optional, in MB, default is 1024
+  timeout: 900 # optional, in seconds, default is 6
+  vpc:
+    securityGroupIds:
+      - "sg-016342f63820b43dc"
+    subnetIds:
+      - "subnet-0679d42b3ee4f2c7b"
+      - "subnet-09b48d3ce1d7458cc"
+
+  # These environment variables are made available to our functions
+  # under process.env.
+  environment:
+    DB_BACKUP_BUCKET_NAME:
+      Ref: DBBackupBucket
+    QUEUE_NAME:
+      Ref: GolangCoachQueue
+    DEBUG: ${self:custom.debug}
+    DATABASE_NAME: ${env:DATABASE_NAME}
+    DATABASE_HOSTNAME: ${env:DATABASE_HOSTNAME}
+    DATABASE_USERNAME: ${env:DATABASE_USERNAME}
+    DATABASE_PASSWORD: ${env:DATABASE_PASSWORD}
+    GITHUB_TOKEN: ${env:GITHUB_TOKEN}
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+        - sqs:GetQueueAttributes
+        - s3:*
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource:
+        - "Fn::GetAtt": [ DBBackupBucket, Arn ]
+        - "Fn::GetAtt": [ GolangCoachQueue, Arn ]
+        - { "Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "DBBackupBucket" } ]]}
+        - { "Fn::Join": ["", ["arn:aws:s3:::", { "Ref": "DBBackupBucket" }, "/*" ]]}
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # VPC
+  - ${file(resources/vpc.yml)}
+  # S3
+  - ${file(resources/s3-bucket.yml)}
+  # SQS Configuration
+  - ${file(resources/sqs.yml)}
+
+functions:
+  scheduler:
+    handler: bin/scheduler
+    events:
+      - schedule:
+          rate: rate(3 hours)
+
+  migrate:
+    handler: bin/migrate
+
+  producer:
+    handler: bin/producer
+    timeout: 60
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - GolangCoachQueue
+              - Arn
+#  backup:
+#    handler: bin/backup
+
+#  notification:
+#    handler: bin/notification
+#    events:
+#    - sqs:
+#        arn:
+#          Fn::GetAtt:
+#          - GolangCoachQueue
+#          - Arn

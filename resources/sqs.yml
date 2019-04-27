@@ -1,0 +1,21 @@
+Resources:
+  GolangCoachQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: ${self:custom.stage}-golang-coach
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn:
+          "Fn::GetAtt": [ GolangCoachDeadLetterQueue, Arn ]
+        maxReceiveCount: 5
+
+  GolangCoachDeadLetterQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: ${self:custom.stage}-dead-letter-golang-coach-queue
+      VisibilityTimeout: 60
+
+Outputs:
+  GolangCoachQueue:
+    Value:
+      Ref: GolangCoachQueue

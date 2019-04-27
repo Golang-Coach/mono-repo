@@ -1,0 +1,12 @@
+Resources:
+  DBBackupBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.stage}-golang-coach-db-backups
+
+# Creating backup for DB in s3
+Outputs:
+  DBBackupBucket:
+    Value:
+      Ref: DBBackupBucket
+
