@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/davecgh/go-spew/spew"
 	"log"
 	"os"
 	"time"
 
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/golang-coach/mono-repo/constants"
 	"github.com/golang-coach/mono-repo/services"
 	"github.com/google/go-github/github"
@@ -50,16 +49,16 @@ func HandleRequest(context context.Context) error {
 	queue := aws.NewQueue(sqs.New(sess))
 	var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
-	spew.Dump(responses)
 	for _, res := range responses {
 		if res.err != nil {
-			fmt.Println(err)
+			fmt.Println("Error" + res.err.Error())
 			continue
 		}
 		if res.Repository != nil {
 			message, _ := json.MarshalToString(res.Repository)
+			fmt.Print("Message" + message)
 			if err := queue.Send(message); err != nil {
-				fmt.Print(err)
+				fmt.Println("Error" + err.Error())
 			}
 		}
 	}
@@ -71,9 +70,7 @@ func getRepositories(repos []models.Repository, githubService services.Github) [
 	var responses []*GithubResponse
 	for _, repo := range repos {
 		go func(repository models.Repository) {
-			fmt.Print(repository.Name)
 			lastCommitInfo, err := githubService.GetLastCommitInfo(repo.Owner, repo.Name)
-			spew.Dump(lastCommitInfo)
 			if err != nil {
 				ch <- &GithubResponse{
 					err: err,
@@ -81,6 +78,7 @@ func getRepositories(repos []models.Repository, githubService services.Github) [
 			} else {
 				lastCommitDate := lastCommitInfo.Commit.Committer.GetDate()
 				if lastCommitDate.After(repo.ProcessedAt) {
+					fmt.Println("Repo " + repository.Name)
 					ch <- &GithubResponse{
 						Repository: &repository,
 					}
@@ -102,9 +100,9 @@ func getRepositories(repos []models.Repository, githubService services.Github) [
 			return responses
 		}
 	}
-	return responses
 }
 
 func main() {
 	lambda.Start(HandleRequest)
+	//HandleRequest(context.Background())
 }
