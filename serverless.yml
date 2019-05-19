@@ -20,7 +20,7 @@ provider:
   region: ap-south-1
   tracing: true
   profile: golang-coach
-  memorySize: 1024 # optional, in MB, default is 1024
+  memorySize: 256 # optional, in MB, default is 1024
   timeout: 900 # optional, in seconds, default is 6
   vpc:
     securityGroupIds:
@@ -73,7 +73,7 @@ functions:
     handler: bin/scheduler
     events:
       - schedule:
-          rate: rate(3 hours)
+          rate: rate(10 minutes)
 
   migrate:
     handler: bin/migrate

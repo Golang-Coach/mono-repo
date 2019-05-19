@@ -95,13 +95,19 @@ func (service Github) GetUpdatedRepositoryInfo(repositoryInfo models.Repository)
 
 	newRepositoryInfo.ID = repositoryInfo.ID
 	newRepositoryInfo.UpdatedAt = lastCommitInfo.Commit.Committer.GetDate()
+	avatarUrl := ""
+	committerName := *lastCommitInfo.Commit.Committer.Name
+	if lastCommitInfo.Author != nil && lastCommitInfo.Author.AvatarURL != nil {
+		avatarUrl = *lastCommitInfo.Author.AvatarURL
+		committerName = *lastCommitInfo.Commit.Author.Name
+	}
 	newRepositoryInfo.User = models.User{
-		Name:       *lastCommitInfo.Commit.Author.Name,
-		UserName:   *lastCommitInfo.Author.Login,
-		ProfileUrl: *lastCommitInfo.Author.AvatarURL,
+		Name:       committerName,
+		UserName:   committerName,
+		ProfileUrl: avatarUrl,
 	}
 
-	newRepositoryInfo.LastUpdatedBy = *lastCommitInfo.Commit.Author.Name
+	newRepositoryInfo.LastUpdatedBy = committerName
 
 	githubReadMeClient := githubReadMe.NewGithub(service.httpClient)
 	content, err := githubReadMeClient.GetReadme(service.context, repositoryInfo.Owner, repositoryInfo.Name)

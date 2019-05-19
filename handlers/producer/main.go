@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -32,6 +33,7 @@ func HandleRequest(context context.Context, request events.SQSEvent) error {
 		client := *github.NewClient(tokenClient)
 		githubService := services.NewGithub(tokenClient, &client, client.Repositories, context)
 
+		fmt.Println("Processing repo " + repository.Name)
 		repo, err := githubService.GetUpdatedRepositoryInfo(repository)
 		if err != nil {
 			return err

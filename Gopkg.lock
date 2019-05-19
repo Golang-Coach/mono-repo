@@ -24,7 +24,7 @@
   version = "v1.10.0"
 
 [[projects]]
-  digest = "1:308b342fde3797df9ea02bed97aa4c194bb570ebfdb72be1e56638cb197f584a"
+  digest = "1:a3e9b6eac25f6c8ca33cc29882b4869f25262ff6e550299b51db0e7f4a23abd3"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -59,16 +59,8 @@
     "service/sts",
   ]
   pruneopts = "UT"
-  revision = "ca6d5f771b63df153f02fe5b117434d5ebafeeda"
-  version = "v1.19.15"
-
-[[projects]]
-  digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
-  name = "github.com/davecgh/go-spew"
-  packages = ["spew"]
-  pruneopts = "UT"
-  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
-  version = "v1.1.1"
+  revision = "2091105f8d54d87f8e99a84a37a5065bd5b3ab9c"
+  version = "v1.19.21"
 
 [[projects]]
   digest = "1:ec6f9bf5e274c833c911923c9193867f3f18788c461f76f05f62bb1510e0ae65"
@@ -87,12 +79,12 @@
   version = "v1.3.1"
 
 [[projects]]
-  digest = "1:992e37aa4416135e5026ecdcd452aea36c49f9b94f4197437701d75f717a7183"
+  digest = "1:a9d2a46fc25a136a81f7bb71f77a85419afd63974e4dcb5b9abc637e0e7be9aa"
   name = "github.com/google/go-github"
   packages = ["github"]
   pruneopts = "UT"
-  revision = "3a61e2f841327c87078bbf281a5196c9a8741c22"
-  version = "v25.0.1"
+  revision = "1fef44b9b427e6c43f92b2f20918e496c275393f"
+  version = "v25.0.2"
 
 [[projects]]
   digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
@@ -103,15 +95,15 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:8b04597fc0136553ba2055503a557df76e2df848fe2fc67c5b9c9fa2fc2e8857"
+  digest = "1:8904a7021be361243dc49a4d3a5152e66d71be081c82f77735a562a67a0a7b97"
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
     "dialects/mysql",
   ]
   pruneopts = "UT"
-  revision = "e3987fd4b803c16497aa4dfd2e75db7a6a061a4e"
-  version = "v1.9.4"
+  revision = "29cb2a42d2a41e5ae449435e1c9277d47115775c"
+  version = "v1.9.5"
 
 [[projects]]
   branch = "master"
@@ -135,6 +127,14 @@
   pruneopts = "UT"
   revision = "0ff49de124c6f76f8494e194af75bde0f1a49a29"
   version = "v1.1.6"
+
+[[projects]]
+  branch = "master"
+  digest = "1:788ee5d734dd81f8b16dafd9f687a65f9cca495acd4648e532821e9cc17482dc"
+  name = "github.com/korovkin/limiter"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6b837f5fd4961699dd0ad0a42aca5a236db0a212"
 
 [[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
@@ -161,7 +161,7 @@
     "context/ctxhttp",
   ]
   pruneopts = "UT"
-  revision = "afa5a82059c6356159f699d81beff22a81842231"
+  revision = "9ce7a6920f093fc0b908c4a5f66ae049110f417e"
 
 [[projects]]
   branch = "master"
@@ -202,11 +202,11 @@
     "github.com/aws/aws-sdk-go/aws/client",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/sqs",
-    "github.com/davecgh/go-spew/spew",
     "github.com/google/go-github/github",
     "github.com/jinzhu/gorm",
     "github.com/jinzhu/gorm/dialects/mysql",
     "github.com/json-iterator/go",
+    "github.com/korovkin/limiter",
     "golang.org/x/oauth2",
   ]
   solver-name = "gps-cdcl"
