@@ -24,6 +24,8 @@ type GithubResponse struct {
 	err        error
 }
 
+const LIMIT = 20
+
 func HandleRequest(context context.Context) error {
 	db := aws.DBClient(false)
 	defer db.Close()
@@ -34,8 +36,7 @@ func HandleRequest(context context.Context) error {
 	err := db.
 		Where("updated_at < ?", yesterday).
 		Or("updated_at is NULL").
-		Or("full_name = ''").
-		Limit(20).
+		Limit(LIMIT).
 		Find(&repos).
 		Error
 
@@ -62,6 +63,7 @@ func HandleRequest(context context.Context) error {
 			continue
 		}
 		if res.Repository != nil {
+			fmt.Println("Repo " + res.Repository.Name + " Full Name " + res.Repository.FullName)
 			message, _ := json.MarshalToString(res.Repository)
 			if err := queue.Send(message); err != nil {
 				fmt.Println("Error " + err.Error())
@@ -74,7 +76,7 @@ func HandleRequest(context context.Context) error {
 func getRepositories(db *gorm.DB, repos []models.Repository, githubService services.Github) []*GithubResponse {
 	var responses []*GithubResponse
 	now := time.Now()
-	for _, repository := range repos {
+	for index, repository := range repos {
 		repository.UpdatedAt = now
 		err := db.
 			Save(&repository).
@@ -85,6 +87,7 @@ func getRepositories(db *gorm.DB, repos []models.Repository, githubService servi
 			})
 			continue
 		}
+		responses = append(responses, &GithubResponse{Repository: nil})
 		lastCommitInfo, err := githubService.GetLastCommitInfo(repository.Owner, repository.Name)
 		if err != nil {
 			responses = append(responses, &GithubResponse{
@@ -93,9 +96,8 @@ func getRepositories(db *gorm.DB, repos []models.Repository, githubService servi
 		} else {
 			lastCommitDate := lastCommitInfo.Commit.Committer.GetDate()
 			if lastCommitDate.After(repository.ProcessedAt) {
-				fmt.Println("Repo " + repository.Name)
 				responses = append(responses, &GithubResponse{
-					Repository: &repository,
+					Repository: &repos[index],
 				})
 			} else {
 				responses = append(responses, &GithubResponse{})

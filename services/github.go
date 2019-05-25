@@ -24,6 +24,11 @@ type Github struct {
 	context            context.Context
 }
 
+// String returns a pointer to the string value passed in.
+func String(v string) *string {
+	return &v
+}
+
 func NewGithub(httpClient *http.Client, client IClient, repositoryServices interfaces.IRepositoryServices, context context.Context) Github {
 	return Github{
 		httpClient:         httpClient,
@@ -37,6 +42,9 @@ func (service Github) GetRepositoryInfo(owner string, repositoryName string) (*m
 	repo, _, err := service.repositoryServices.Get(service.context, owner, repositoryName)
 	if err != nil {
 		return nil, err
+	}
+	if repo.Description == nil {
+		repo.Description = String("")
 	}
 	repositoryInfo := &models.Repository{
 		Name:        *repo.Name,

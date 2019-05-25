@@ -1,10 +1,9 @@
 service: golang-coach
 
 package:
+  individually: true
   exclude:
     - ./**
-  include:
-    - ./bin/**
 
 custom:
   # Our stage is based on what is passed in when running serverless
@@ -70,17 +69,28 @@ resources:
 
 functions:
   scheduler:
+    package:
+      include:
+        - ./bin/scheduler
     handler: bin/scheduler
     events:
       - schedule:
           rate: rate(10 minutes)
 
   migrate:
+    individually: true
     handler: bin/migrate
+    package:
+      include:
+        - ./bin/migrate
 
   producer:
+    individually: true
     handler: bin/producer
     timeout: 60
+    package:
+      include:
+        - ./bin/producer
     events:
       - sqs:
           arn:
