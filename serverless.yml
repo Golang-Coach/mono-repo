@@ -25,7 +25,6 @@ provider:
     securityGroupIds:
       - "sg-016342f63820b43dc"
     subnetIds:
-      - "subnet-0679d42b3ee4f2c7b"
       - "subnet-09b48d3ce1d7458cc"
 
   # These environment variables are made available to our functions
